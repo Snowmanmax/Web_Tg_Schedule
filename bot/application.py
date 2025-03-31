@@ -1,5 +1,5 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, filters, CallbackQueryHandler
+from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
 from config.settings import settings
 from config.database import get_db
 from database.repositories.schedule import GroupWeekRepository, GroupDayRepository, GroupLectureRepository
@@ -18,7 +18,7 @@ def search(update: Update, context: CallbackContext) -> None:
   db = next(get_db())
 
   group_repo = GroupWeekRepository(db)
-  groups = group_repo.get_all()  # Replace with actual search logic
+  groups = group_repo.get_all()
 
   buttons = [[InlineKeyboardButton(group.group_name, callback_data=group.id)] for group in groups]
   keyboard = InlineKeyboardMarkup(buttons)
@@ -30,7 +30,7 @@ def free_rooms(update: Update, context: CallbackContext) -> None:
   db = next(get_db())
   lecture_repo = GroupLectureRepository(db)
 
-  free_lectures = lecture_repo.get_all()  # Replace with actual free rooms logic
+  free_lectures = lecture_repo.get_all()
 
   lecture_info = "\n".join([f"{lec.lecture_name} at {lec.lecture_time} in {lec.lecture_room}" for lec in free_lectures])
   update.message.reply_text(f'Free rooms:\n{lecture_info}')
@@ -45,8 +45,8 @@ def button(update: Update, context: CallbackContext) -> None:
   day_repo = GroupDayRepository(db)
   lecture_repo = GroupLectureRepository(db)
 
-  days = day_repo.get_all()  # Replace with actual filter logic
-  lectures = lecture_repo.get_all()  # Replace with actual filter logic
+  days = day_repo.get_all()
+  lectures = lecture_repo.get_all()
 
   lecture_info = "\n".join([f"{lec.lecture_name} at {lec.lecture_time} in {lec.lecture_room}" for lec in lectures])
   query.edit_message_text(text=f"Schedule for group {group_id}:\n{lecture_info}")

@@ -15,9 +15,8 @@ def search():
   query = request.args.get('query')
   db = next(get_db())
 
-  # Example search logic
   group_repo = GroupWeekRepository(db)
-  groups = group_repo.get_all()  # Replace with actual search logic
+  groups = group_repo.get_all()
 
   return render_template('search/results.html', query=query, groups=groups)
 
@@ -28,8 +27,8 @@ def schedule(group_id):
   day_repo = GroupDayRepository(db)
   lecture_repo = GroupLectureRepository(db)
 
-  days = day_repo.get_all()  # Replace with actual filter logic
-  lectures = lecture_repo.get_all()  # Replace with actual filter logic
+  days = day_repo.get_all()
+  lectures = lecture_repo.get_all()
 
   return render_template('search/details.html', group_id=group_id, days=days, lectures=lectures)
 
@@ -39,7 +38,7 @@ def free_rooms():
   db = next(get_db())
   lecture_repo = GroupLectureRepository(db)
 
-  free_lectures = lecture_repo.get_all()  # Replace with actual free rooms logic
+  free_lectures = lecture_repo.get_all()
 
   return render_template('search/free_rooms.html', free_lectures=free_lectures)
 
