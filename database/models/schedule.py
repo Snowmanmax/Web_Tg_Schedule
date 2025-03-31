@@ -1,27 +1,49 @@
-class Lecturer:
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
+from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, UUID
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
 
-class Course:
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
+Base = declarative_base()
 
-class Group:
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
+class Lecturer(Base):
+    __tablename__ = 'LECTURER'
+    id = Column(UUID, primary_key=True)
+    lecturer_name = Column(String(64), nullable=False)
 
-class Lecture:
-    def __init__(self, id, course_id, lecturer_id, day_id, lecture_name, lecture_time, room, is_even, lecture_num, is_cancelled):
-        self.id = id
-        self.course_id = course_id
-        self.lecturer_id = lecturer_id
-        self.day_id = day_id
-        self.lecture_name = lecture_name
-        self.lecture_time = lecture_time
-        self.room = room
-        self.is_even = is_even
-        self.lecture_num = lecture_num
-        self.is_cancelled = is_cancelled
+class Course(Base):
+    __tablename__ = 'COURSE'
+    id = Column(UUID, primary_key=True)
+    course_name = Column(String(64), nullable=False)
+
+class GroupWeek(Base):
+    __tablename__ = 'GROUP_WEEKS'
+    id = Column(UUID, primary_key=True)
+    group_name = Column(String(256), nullable=False)
+
+class GroupDay(Base):
+    __tablename__ = 'GROUP_DAYS'
+    id = Column(UUID, primary_key=True)
+    week_id = Column(UUID, ForeignKey('GROUP_WEEKS.id'), nullable=False)
+    day_num = Column(Integer, nullable=False)
+    day_name = Column(String(256), nullable=False)
+
+    group_week = relationship("GroupWeek", back_populates="days")
+
+class GroupLecture(Base):
+    __tablename__ = 'GROUP_LECTURES'
+    id = Column(UUID, primary_key=True)
+    course_id = Column(UUID, ForeignKey('COURSE.id'))
+    lecturer_id = Column(UUID, ForeignKey('LECTURER.id'))
+    day_id = Column(UUID, ForeignKey('GROUP_DAYS.id'), nullable=False)
+    is_even = Column(Boolean, nullable=False)
+    lecture_num = Column(Integer, nullable=False)
+    lecture_name = Column(String(1024), nullable=False)
+    lecture_time = Column(String(256), nullable=False)
+    lecture_room = Column(String(256), nullable=False)
+    is_cancelled = Column(Boolean)
+
+    course = relationship("Course")
+    lecturer = relationship("Lecturer")
+    group_day = relationship("GroupDay", back_populates="lectures")
+
+GroupWeek.days = relationship("GroupDay", order_by=GroupDay.id, back_populates="group_week")
+GroupDay.lectures = relationship("GroupLecture", order_by=GroupLecture.id, back_populates="group_day")

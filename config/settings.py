@@ -1,8 +1,8 @@
-DATABASE_CONFIG = {
-    'HOST': '79.174.88.177',       # Адрес базы данных
-    'PORT': 18699,              # Порт
-    'USER': 'Parcer',       # Имя пользователя базы данных
-    'PASSWORD': 'JBk%Vl2KnU#lA0{',  # Пароль
-    'DB_NAME': 'mtusi', # Имя базы данных
-    'SCHEMA': 'schedule',      # Схема, в которой будут храниться таблицы
-}
+import os
+
+class Settings:
+    DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://user:password@localhost/schedule')
+    TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN', 'your-telegram-token')
+    LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
+
+settings = Settings()

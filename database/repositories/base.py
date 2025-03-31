@@ -1,32 +1,23 @@
-import psycopg2
-from contextlib import contextmanager
-import logging
+from sqlalchemy.orm import Session
+from typing import List, TypeVar, Type
 
-logger = logging.getLogger(__name__)
+T = TypeVar('T', bound='Base')
 
 class BaseRepository:
-    def __init__(self, connection):
-        self.connection = connection
+    def __init__(self, session: Session, model: Type[T]):
+        self.session = session
+        self.model = model
 
-    @contextmanager
-    def get_cursor(self):
-        cursor = self.connection.cursor()
-        try:
-            yield cursor
-        finally:
-            cursor.close()
+    def get_all(self) -> List[T]:
+        return self.session.query(self.model).all()
 
-    def execute_query(self, query, params=None):
-        with self.get_cursor() as cursor:
-            cursor.execute(query, params)
-            self.connection.commit()
+    def get_by_id(self, id) -> T:
+        return self.session.query(self.model).filter(self.model.id == id).first()
 
-    def fetch_one(self, query, params=None):
-        with self.get_cursor() as cursor:
-            cursor.execute(query, params)
-            return cursor.fetchone()
+    def add(self, entity: T) -> None:
+        self.session.add(entity)
+        self.session.commit()
 
-    def fetch_all(self, query, params=None):
-        with self.get_cursor() as cursor:
-            cursor.execute(query, params)
-            return cursor.fetchall()
+    def remove(self, entity: T) -> None:
+        self.session.delete(entity)
+        self.session.commit()

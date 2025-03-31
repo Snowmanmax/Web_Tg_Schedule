@@ -1,10 +1,5 @@
-# config/logging.py
-
 import logging
+from config.settings import settings
 
-# Конфигурация логирования
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-)
+logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
