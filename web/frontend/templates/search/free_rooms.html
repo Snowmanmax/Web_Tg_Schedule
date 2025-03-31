@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Results</title>
+    <title>Free Rooms</title>
 </head>
 <body>
-    <h1>Search Results for "{{ query }}"</h1>
+    <h1>Free Rooms</h1>
     <ul>
-        {% for group in groups %}
-        <li><a href="/schedule/{{ group.id }}">{{ group.group_name }}</a></li>
+        {% for lecture in free_lectures %}
+        <li>{{ lecture.lecture_name }} at {{ lecture.lecture_time }} in {{ lecture.lecture_room }}</li>
         {% endfor %}
     </ul>
     <a href="/">Back to Search</a>

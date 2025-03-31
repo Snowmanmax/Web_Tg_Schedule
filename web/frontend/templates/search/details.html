@@ -6,8 +6,19 @@
     <title>Schedule Details</title>
 </head>
 <body>
-    <h1>Schedule Details</h1>
-    <!-- Display schedule details here -->
+    <h1>Schedule Details for Group {{ group_id }}</h1>
+    <h2>Days</h2>
+    <ul>
+        {% for day in days %}
+        <li>{{ day.day_name }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Lectures</h2>
+    <ul>
+        {% for lecture in lectures %}
+        <li>{{ lecture.lecture_name }} at {{ lecture.lecture_time }} in {{ lecture.lecture_room }}</li>
+        {% endfor %}
+    </ul>
     <a href="/search">Back to Results</a>
 </body>
 </html>

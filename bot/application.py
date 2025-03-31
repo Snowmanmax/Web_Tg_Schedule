@@ -1,4 +1,39 @@
-from telegram.ext import CallbackQueryHandler
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, filters, CallbackQueryHandler
+from config.settings import settings
+from config.database import get_db
+from database.repositories.schedule import GroupWeekRepository, GroupDayRepository, GroupLectureRepository
+
+
+def start(update: Update, context: CallbackContext) -> None:
+  update.message.reply_text('Привет! Это бот для просмотра расписания.')
+
+
+def help_command(update: Update, context: CallbackContext) -> None:
+  update.message.reply_text('Используйте /search для поиска расписания, /free_rooms для просмотра свободных аудиторий.')
+
+
+def search(update: Update, context: CallbackContext) -> None:
+  query = ' '.join(context.args)
+  db = next(get_db())
+
+  group_repo = GroupWeekRepository(db)
+  groups = group_repo.get_all()  # Replace with actual search logic
+
+  buttons = [[InlineKeyboardButton(group.group_name, callback_data=group.id)] for group in groups]
+  keyboard = InlineKeyboardMarkup(buttons)
+
+  update.message.reply_text('Search results:', reply_markup=keyboard)
+
+
+def free_rooms(update: Update, context: CallbackContext) -> None:
+  db = next(get_db())
+  lecture_repo = GroupLectureRepository(db)
+
+  free_lectures = lecture_repo.get_all()  # Replace with actual free rooms logic
+
+  lecture_info = "\n".join([f"{lec.lecture_name} at {lec.lecture_time} in {lec.lecture_room}" for lec in free_lectures])
+  update.message.reply_text(f'Free rooms:\n{lecture_info}')
 
 
 def button(update: Update, context: CallbackContext) -> None:
@@ -25,7 +60,7 @@ def main() -> None:
   dispatcher.add_handler(CommandHandler("start", start))
   dispatcher.add_handler(CommandHandler("help", help_command))
   dispatcher.add_handler(CommandHandler("search", search))
-  dispatcher.add_handler(CommandHandler("free_rooms.html", free_rooms))
+  dispatcher.add_handler(CommandHandler("free_rooms", free_rooms))
   dispatcher.add_handler(CallbackQueryHandler(button))
 
   updater.start_polling()
